@@ -1,6 +1,20 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+const jwt = require('jsonwebtoken');
+
 const accountAuthenticated = async (req, res, next) => {
     try {
-      if (req.session.account || req.session.user) {
+        const authToken = req.session.authToken;
+        const decodedToken = jwt.verify(authToken, 'shahil');
+        const userEmail = decodedToken.userEmail;
+        const userPassword = decodedToken.userPassword;
+        console.log(userEmail, userPassword);
+        const check2 = await prisma.lu_user.findFirst({ where:{
+            email: userEmail,
+            password: userPassword
+        }})
+
+      if (req.session.user && check2) {
         // console.log("account exists")
         next();
       } else {
@@ -9,6 +23,7 @@ const accountAuthenticated = async (req, res, next) => {
           .send({ success: false, message: "ACCOUNT NOT AUTHENTICATED" });
       }
     } catch (error) {
+        console.log(error);
       res
         .status(500)
         .send({

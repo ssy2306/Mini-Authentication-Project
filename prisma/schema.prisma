@@ -15,7 +15,7 @@ model lu_user{
   name String
   email String @unique
   phone_number String?
-  password String
+  password String @db.VarChar(255)
 
   test_response_math  test_response_math[]
 }
