@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+//for user inputs
+model lu_user{
+  id Int @id @unique(map: "pk_user_id") @default(autoincrement())
+  name String
+  email String @unique
+  phone_number String?
+  password String
+
+  test_response_math  test_response_math[]
+}
+
+//for various tests
+model Tests{
+  pk_test_id Int @id @default(autoincrement())
+}
+
+//for questions
+model question_math{
+  pk_question_id Int @id @default(autoincrement())
+  answer_id Int?
+
+  answer_math answer_math[]
+  test_response_math  test_response_math[]
+}
+
+//for their answers
+model answer_math{
+  pk_answer_id Int @id @default(autoincrement())
+  correctness Int
+  fk_question_math  Int
+
+  test_response_math  test_response_math[]
+  question_math question_math @relation(fields: [fk_question_math], references: [pk_question_id], onDelete: Cascade, map: "qs_ans_map") 
+}
+
+//user responses
+model test_response_math{
+  pk_test_response_id Int @id @unique @default(autoincrement())
+  fk_question_math_id Int
+  fk_user_id          Int
+  user_answer_id      Int
+  fk_answer_math_id   Int
+
+  answer_math answer_math @relation(fields: [fk_answer_math_id], references: [pk_answer_id], onDelete: Cascade, map: "user_response_math_correct") 
+  lu_user lu_user @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "user_response_id") 
+  question_math question_math @relation(fields: [fk_answer_math_id], references: [pk_question_id], onDelete: Cascade, map: "qs_ans_response")
+}
