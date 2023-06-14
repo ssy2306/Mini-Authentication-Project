@@ -83,10 +83,9 @@ model test_response {
 }
 
 model user_score {
-  fk_user_id Int     
+  fk_user_id Int     @id
   score      Decimal
   test_id    Int     
   Tests      Tests   @relation(fields: [test_id], references: [test_id], onDelete: Cascade, map: "test_map_score")
   lu_user    lu_user @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "user_score_id")
-  @@unique([fk_user_id,test_id])
 }
