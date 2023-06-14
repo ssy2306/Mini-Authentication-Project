@@ -9,50 +9,84 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 //for user inputs
-model lu_user{
-  id Int @id @unique(map: "pk_user_id") @default(autoincrement())
-  name String
-  email String @unique
+model lu_user {
+  id           Int     @id @unique(map: "pk_user_id") @default(autoincrement())
+  name         String
+  email        String  @unique
   phone_number String?
-  password String @db.VarChar(255)
+  password     String  @db.VarChar(255)
 
-  test_response_math  test_response_math[]
+  user_score    user_score[]
+  test_response test_response[]
+  Tests         Tests[]
 }
-
+// //map between test and the user
+// model map_test_user{
+//   fk_user_id Int
+//   fk_unique_test_table
+// }
 //for various tests
-model Tests{
-  pk_test_id Int @id @default(autoincrement())
+model Tests {
+  test_id    Int  @id     
+  fk_user_id Int
+  user_score  user_score[]
+  lu_user    lu_user    @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "test_account_id")
+  question   question[]
+  map_question_answer map_question_answer[]
+
 }
 
 //for questions
-model question_math{
-  pk_question_id Int @id @default(autoincrement())
-  answer_id Int?
+model question {
+  pk_question_id Int     @id @default(autoincrement())
+  question       String
+  answer_option  String?
+  fk_test_id     Int?
 
-  answer_math answer_math[]
-  test_response_math  test_response_math[]
+  answer              answer[]
+  test_response       test_response[]
+  map_question_answer map_question_answer[]
+  Tests               Tests?                @relation(fields: [fk_test_id], references: [test_id], onDelete: Cascade, map: "test_question_id")
 }
 
 //for their answers
-model answer_math{
-  pk_answer_id Int @id @default(autoincrement())
+model answer {
+  answer_id   Int    @id
   correctness Int
-  fk_question_math  Int
+  answer      String
+  fk_question Int
 
-  test_response_math  test_response_math[]
-  question_math question_math @relation(fields: [fk_question_math], references: [pk_question_id], onDelete: Cascade, map: "qs_ans_map") 
+  map_question_answer map_question_answer[]
+  question            question              @relation(fields: [fk_question], references: [pk_question_id], onDelete: Cascade, map: "qs_ans_map")
+}
+
+model map_question_answer {
+  fk_question_id Int @id
+  fk_answer_id   Int
+  fk_test_id    Int
+
+  Tests     Tests @relation(fields: [fk_test_id], references: [test_id])
+  question question @relation(fields: [fk_question_id], references: [pk_question_id], onDelete: Cascade, map: "map_qs")
+  answer   answer   @relation(fields: [fk_answer_id], references: [answer_id], onDelete: Cascade, map: "map_ans")
 }
 
 //user responses
-model test_response_math{
+model test_response {
   pk_test_response_id Int @id @unique @default(autoincrement())
-  fk_question_math_id Int
+  fk_question_id      Int
   fk_user_id          Int
   user_answer_id      Int
-  fk_answer_math_id   Int
+  lu_user  lu_user  @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "user_response_id")
+  question question @relation(fields: [fk_question_id], references: [pk_question_id], onDelete: Cascade)
+}
 
-  answer_math answer_math @relation(fields: [fk_answer_math_id], references: [pk_answer_id], onDelete: Cascade, map: "user_response_math_correct") 
-  lu_user lu_user @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "user_response_id") 
-  question_math question_math @relation(fields: [fk_answer_math_id], references: [pk_question_id], onDelete: Cascade, map: "qs_ans_response")
+model user_score {
+  fk_user_id Int     
+  score      Decimal
+  test_id    Int     
+  Tests      Tests   @relation(fields: [test_id], references: [test_id], onDelete: Cascade, map: "test_map_score")
+  lu_user    lu_user @relation(fields: [fk_user_id], references: [id], onDelete: Cascade, map: "user_score_id")
+  @@unique([fk_user_id,test_id])
 }
