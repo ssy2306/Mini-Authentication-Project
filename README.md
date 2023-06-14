@@ -22,10 +22,10 @@ Mandatory endpoint 2: Sign up endpoint with phone number as a not required field
 
 Request body
 {
-	name: “Gaurav Kumar Verma”,
-	email: “1905530@kiit.ac.in”,
+	name: “XXX  YY”,
+	email: “XXX0@kiit.ac.in”,
 	password: “example@123”,
-	phone_number: “+917735709660”
+	phone_number: “+91XXXXXX”
 }
 
 Response body
@@ -41,7 +41,7 @@ Mandatory endpoint 3: Sign in endpoint
 
 Request body
 {
-email: “1905530@kiit.ac.in”,
+email: “XXX0@kiit.ac.in”,
 password: “example@123”
 }
 
@@ -63,7 +63,7 @@ Depending on your authentication technique / method, you’ve to perform this re
 
 Request body
 {
-phone_number: “+917735709660”
+phone_number: “+91XXXXXXXX”
 }
 
 
