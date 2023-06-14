@@ -44,6 +44,7 @@ const test1 = async (req, res) => {
                         fk_user_id: user_id,
                         user_answer_id: answer_id[index]
                     }
+                    
                 });
                 console.log(submit);
             });
