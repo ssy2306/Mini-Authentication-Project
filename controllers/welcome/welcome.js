@@ -8,4 +8,4 @@ const welcome = async (req, res) => {
     })
 }
 
-module.exports = welcome;
+module.exports = welcome;l
